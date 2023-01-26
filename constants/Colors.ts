@@ -1,5 +1,12 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+export const theme = {
+  primary: {
+    main: '#7BD88A',
+    contrastText: '#fff',
+  },
+  disabled: '#EFEFEF',
+};
+const tintColorLight = '#7BD88A';
+const tintColorDark = '#7BD88A';
 
 export default {
   light: {

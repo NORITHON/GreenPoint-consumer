@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -21,6 +21,8 @@ import TabFourScreen from '../screens/TabFourScreen';
 import TabFiveScreen from '../screens/TabFiveScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -41,8 +43,10 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
@@ -72,8 +76,9 @@ function BottomTabNavigator() {
         component={TabOneScreen}
         options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
           headerTransparent: true,
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: '홈',
+          headerTitle: '',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
@@ -96,8 +101,9 @@ function BottomTabNavigator() {
         component={TabTwoScreen}
         options={{
           headerTransparent: true,
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: '가맹점',
+          headerTitle: '',
+          tabBarIcon: ({ color }) => <TabBarIcon name="store" color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -105,8 +111,9 @@ function BottomTabNavigator() {
         component={TabThreeScreen}
         options={{
           headerTransparent: true,
-          title: 'Tab Three',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: '지도',
+          headerTitle: '',
+          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -114,18 +121,35 @@ function BottomTabNavigator() {
         component={TabFourScreen}
         options={{
           headerTransparent: true,
-          title: 'Tab Four',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: '포인트',
+          headerTitle: '',
+          tabBarIcon: ({ color }) => <TabBarIcon name="coins" color={color} />,
         }}
       />
       <BottomTab.Screen
         name="TabFive"
         component={TabFiveScreen}
-        options={{
+        options={({ navigation }: RootTabScreenProps<'TabFive'>) => ({
           headerTransparent: true,
-          title: 'Tab Five',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
+          title: '마이',
+          headerTitle: '',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user-alt" color={color} />,
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Modal')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <FontAwesome5
+                name="cog"
+                size={24}
+                color={Colors[colorScheme].tabIconDefault}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
+        })}
       />
     </BottomTab.Navigator>
   );
@@ -135,8 +159,8 @@ function BottomTabNavigator() {
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof FontAwesome5>['name'];
   color: string;
 }) {
-  return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome5 size={24} style={{ marginBottom: -3 }} {...props} />;
 }
