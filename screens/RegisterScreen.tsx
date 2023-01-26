@@ -1,6 +1,10 @@
+import Postcode from '@actbase/react-daum-postcode';
+import { REST_API_KEY } from '@env';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import axios from 'axios';
+import * as Location from 'expo-location';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Image,
@@ -21,18 +25,55 @@ interface IFormData {
   contact: string;
   image: string;
   kakaoToken: string;
+  location: string;
 }
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
   const [step, setStep] = useState(0);
-  const increaseStep = () => setStep((old) => old + 1);
+  const { watch, control, handleSubmit, setValue } = useForm<IFormData>();
+  const increaseStep = () =>
+    setStep((old) => {
+      if (old == 0 && watch('latitude')) return 2;
+      return old + 1;
+    });
   const decreaseStep = () => setStep((old) => old - 1);
-  const { watch, control, handleSubmit } = useForm<IFormData>();
   const onSubmit = (data: IFormData) => {
-    console.log(data);
+    // console.log(data);
     increaseStep();
   };
+  const getAddressData = (data: any) => {
+    let defaultAddress = '';
+    if (data.buildingName === 'N') {
+      defaultAddress = data.apartment;
+    } else {
+      defaultAddress = data.buildingName;
+    }
+    const config = { headers: { Authorization: `KakaoAK ${REST_API_KEY}` } };
+    const url = 'https://dapi.kakao.com/v2/local/search/address.json?query=' + data.address;
+    axios.get(url, config).then(function (result) {
+      if (result.data !== undefined || result.data !== null) {
+        if (result.data.documents[0].x && result.data.documents[0].y) {
+          setValue('latitude', result.data.documents[0].y);
+          setValue('longitude', result.data.documents[0].x);
+          setValue('location', defaultAddress);
+        }
+      }
+    });
+  };
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return;
+      }
+      const location = await Location.getCurrentPositionAsync({});
+      const latitude = location.coords.latitude;
+      const longitude = location.coords.longitude;
+      setValue('latitude', latitude);
+      setValue('longitude', longitude);
+    })();
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -73,24 +114,21 @@ export default function RegisterScreen() {
               <FontAwesome5 name="chevron-left" size={24} />
             </TouchableOpacity>
             <Text style={styles.title}>
-              {watch('nickname')}님의 현재 위치를{'\n'}입력해주세요
-            </Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="지번, 도로명, 건물명으로 검색"
-                  placeholderTextColor={'#8B95A1'}
-                  style={styles.input}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value + ''}
-                />
+              {watch('nickname')}님의 현재 위치를{'\n'}입력해주세요{'\n'}
+              {watch('location') && (
+                <Text lightColor={theme.primary.main} darkColor={theme.primary.main}>
+                  {watch('location') && `${watch('location')} 선택됨`}
+                </Text>
               )}
-              name="latitude"
+            </Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Postcode
+              style={{ flex: 1, width: '100%', marginBottom: 120 }}
+              jsOptions={{ animation: true }}
+              onSelected={(data) => getAddressData(data)}
+              onError={function (error: unknown): void {
+                throw new Error('Function not implemented.');
+              }}
             />
             <TouchableOpacity
               style={watch('latitude') ? styles.activeBtn : styles.button}
@@ -123,6 +161,7 @@ export default function RegisterScreen() {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  keyboardType="number-pad"
                 />
               )}
               name="contact"
@@ -196,6 +235,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     lineHeight: 32,
+  },
+  separator: {
+    marginTop: 8,
+    height: 1,
+    width: '100%',
   },
   avatar: {
     width: 300,

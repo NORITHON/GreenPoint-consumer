@@ -43,6 +43,7 @@ const linking: LinkingOptions<RootStackParamList> = {
         },
       },
       Login: 'login',
+      KakaoLogin: 'kakaoLogin',
       Register: 'register',
       Modal: 'modal',
       NotFound: '*',

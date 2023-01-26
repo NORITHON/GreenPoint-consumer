@@ -13,7 +13,7 @@ export default function LoginScreen() {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.reset({ routes: [{ name: 'Register' }] })}
+        onPress={() => navigation.navigate('KakaoLogin')}
         activeOpacity={0.7}
       >
         <Image style={styles.symbol} source={require('../assets/images/kakao_symbol.png')} />

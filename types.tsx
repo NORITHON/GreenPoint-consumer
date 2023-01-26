@@ -16,6 +16,7 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Login: undefined;
+  KakaoLogin: undefined;
   Register: undefined;
   Modal: undefined;
   NotFound: undefined;
