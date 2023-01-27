@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { IStore } from './store/types';
 
 declare global {
   namespace ReactNavigation {
@@ -19,6 +20,7 @@ export type RootStackParamList = {
   KakaoLogin: undefined;
   Register: undefined;
   Modal: undefined;
+  Map: IStore | undefined;
   NotFound: undefined;
 };
 
@@ -29,7 +31,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 
 export type RootTabParamList = {
   Home: undefined;
-  TabTwo: undefined;
+  Store: undefined;
   TabThree: undefined;
   TabFour: undefined;
   TabFive: undefined;

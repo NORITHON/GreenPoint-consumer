@@ -17,3 +17,10 @@ export interface IUser {
   point: number;
   totalPoint: number;
 }
+
+export interface IStore {
+  id: number;
+  name: string;
+  point: number;
+  img: string;
+}

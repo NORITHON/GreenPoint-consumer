@@ -46,15 +46,16 @@ const BackBtn = ({ decreaseStep }: IBackBtn) => {
 
 export default function RegisterScreen() {
   const setUser = useSetRecoilState(userState);
-
   const navigation = useNavigation();
   const [step, setStep] = useState(0);
   const { watch, control, handleSubmit, setValue } = useForm<IFormData>();
-  const increaseStep = () =>
+  const increaseStep = () => {
+    Keyboard.dismiss();
     setStep((old) => {
       if (old == 0 && watch('latitude')) return 2;
       return old + 1;
     });
+  };
   const decreaseStep = () => setStep((old) => old - 1);
   const onSubmit = (data: IFormData) => {
     setUser({
@@ -104,130 +105,120 @@ export default function RegisterScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-        {step === 0 && (
-          <View style={styles.container}>
-            <Text style={styles.title}>그린포인트에서 사용할{'\n'}닉네임을 알려주세요</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="닉네임을 입력해주세요"
-                  placeholderTextColor={'#8B95A1'}
-                  style={styles.input}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              )}
-              name="nickname"
-            />
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity
-              style={watch('nickname') ? styles.activeBtn : styles.button}
-              disabled={watch('nickname') ? false : true}
-              onPress={increaseStep}
-              activeOpacity={0.7}
-            >
-              <Text style={watch('nickname') ? styles.activeText : styles.text}>다음</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {step === 1 && (
-          <View style={styles.container}>
-            <BackBtn decreaseStep={decreaseStep} />
-            <Text style={styles.title}>
-              {watch('nickname')}님의 현재 위치를{'\n'}입력해주세요{'\n'}
-              {watch('location') && (
-                <Text lightColor={theme.primary.main} darkColor={theme.primary.main}>
-                  {watch('location') && `${watch('location')} 선택됨`}
-                </Text>
-              )}
-            </Text>
-            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-            <Postcode
-              style={{ flex: 1, width: '100%', marginBottom: 20 }}
-              jsOptions={{ animation: true }}
-              onSelected={(data) => getAddressData(data)}
-              onError={function (error: unknown): void {
-                throw new Error('Function not implemented.');
-              }}
-            />
-            <TouchableOpacity
-              style={watch('latitude') ? styles.activeBtn : styles.button}
-              disabled={watch('latitude') ? false : true}
-              onPress={increaseStep}
-              activeOpacity={0.7}
-            >
-              <Text style={watch('latitude') ? styles.activeText : styles.text}>다음</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {step === 2 && (
-          <View style={styles.container}>
-            <BackBtn decreaseStep={decreaseStep} />
-            <Text style={styles.title}>
-              {watch('nickname')}님의 전화번호를{'\n'}입력해주세요
-            </Text>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="전화번호를 입력해주세요"
-                  placeholderTextColor={'#8B95A1'}
-                  style={styles.input}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  keyboardType="number-pad"
-                />
-              )}
-              name="contact"
-            />
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity
-              style={watch('contact') ? styles.activeBtn : styles.button}
-              disabled={watch('contact') ? false : true}
-              onPress={handleSubmit(onSubmit)}
-              activeOpacity={0.7}
-            >
-              <Text style={watch('contact') ? styles.activeText : styles.text}>완료</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {step === 3 && (
-          <View style={styles.container2}>
-            <BackBtn decreaseStep={decreaseStep} />
-            <Text style={styles.title2}>
-              {watch('nickname')}님{'\n'}반가워요
-            </Text>
-            <Image style={styles.avatar} source={require('../assets/images/logo.png')} />
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity style={styles.activeBtn} onPress={increaseStep} activeOpacity={0.7}>
-              <Text style={styles.activeText}>다음으로</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {step === 4 && (
-          <View style={styles.container2}>
-            <BackBtn decreaseStep={decreaseStep} />
-            <Text style={styles.title2}>그린 포인트를 모으면서{'\n'}환경을 지켜주세요!</Text>
-            <Image style={styles.avatar} source={require('../assets/images/logo.png')} />
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity
-              style={styles.activeBtn}
-              onPress={() => navigation.reset({ routes: [{ name: 'Root' }] })}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.activeText}>포인트 모으러 가기</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        <View style={{ ...styles.container, display: step === 0 ? 'flex' : 'none' }}>
+          <Text style={styles.title}>그린포인트에서 사용할{'\n'}닉네임을 알려주세요</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="닉네임을 입력해주세요"
+                placeholderTextColor={'#8B95A1'}
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="nickname"
+          />
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            style={watch('nickname') ? styles.activeBtn : styles.button}
+            disabled={watch('nickname') ? false : true}
+            onPress={increaseStep}
+            activeOpacity={0.7}
+          >
+            <Text style={watch('nickname') ? styles.activeText : styles.text}>다음</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ ...styles.container, display: step === 1 ? 'flex' : 'none' }}>
+          <BackBtn decreaseStep={decreaseStep} />
+          <Text style={styles.title}>
+            {watch('nickname')}님의 현재 위치를{'\n'}입력해주세요{'\n'}
+            {watch('location') && (
+              <Text lightColor={theme.primary.main} darkColor={theme.primary.main}>
+                {watch('location') && `${watch('location')} 선택됨`}
+              </Text>
+            )}
+          </Text>
+          <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+          <Postcode
+            style={{ flex: 1, width: '100%', marginBottom: 20 }}
+            jsOptions={{ animation: true }}
+            onSelected={(data) => getAddressData(data)}
+            onError={function (error: unknown): void {
+              throw new Error('Function not implemented.');
+            }}
+          />
+          <TouchableOpacity
+            style={watch('latitude') ? styles.activeBtn : styles.button}
+            disabled={watch('latitude') ? false : true}
+            onPress={increaseStep}
+            activeOpacity={0.7}
+          >
+            <Text style={watch('latitude') ? styles.activeText : styles.text}>다음</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ ...styles.container, display: step === 2 ? 'flex' : 'none' }}>
+          <BackBtn decreaseStep={decreaseStep} />
+          <Text style={styles.title}>
+            {watch('nickname')}님의 전화번호를{'\n'}입력해주세요
+          </Text>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="전화번호를 입력해주세요"
+                placeholderTextColor={'#8B95A1'}
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                keyboardType="number-pad"
+              />
+            )}
+            name="contact"
+          />
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            style={watch('contact') ? styles.activeBtn : styles.button}
+            disabled={watch('contact') ? false : true}
+            onPress={handleSubmit(onSubmit)}
+            activeOpacity={0.7}
+          >
+            <Text style={watch('contact') ? styles.activeText : styles.text}>완료</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ ...styles.container2, display: step === 3 ? 'flex' : 'none' }}>
+          <BackBtn decreaseStep={decreaseStep} />
+          <Text style={styles.title2}>
+            {watch('nickname')}님{'\n'}반가워요
+          </Text>
+          <Image style={styles.avatar} source={require('../assets/images/logo.png')} />
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity style={styles.activeBtn} onPress={increaseStep} activeOpacity={0.7}>
+            <Text style={styles.activeText}>다음으로</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ ...styles.container2, display: step === 4 ? 'flex' : 'none' }}>
+          <BackBtn decreaseStep={decreaseStep} />
+          <Text style={styles.title2}>그린 포인트를 모으면서{'\n'}환경을 지켜주세요!</Text>
+          <Image style={styles.avatar} source={require('../assets/images/logo.png')} />
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            style={styles.activeBtn}
+            onPress={() => navigation.reset({ routes: [{ name: 'Root' }] })}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.activeText}>포인트 모으러 가기</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -245,10 +236,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
+    width: '88%',
     fontSize: 20,
-    fontWeight: '500',
-    lineHeight: 28,
-    textAlign: 'center',
+    fontWeight: '600',
+    lineHeight: 32,
   },
   title2: {
     position: 'absolute',
@@ -264,10 +255,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   avatar: {
-    width: 300,
-    height: 225,
-    // borderRadius: 200,
-    marginBottom: 44,
+    height: 320,
+    resizeMode: 'contain',
+    marginBottom: 24,
     position: 'absolute',
   },
   input: {

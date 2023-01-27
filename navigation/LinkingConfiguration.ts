@@ -17,12 +17,12 @@ const linking: LinkingOptions<RootStackParamList> = {
         screens: {
           Home: {
             screens: {
-              TabOneScreen: 'home',
+              HomeScreen: 'home',
             },
           },
-          TabTwo: {
+          Store: {
             screens: {
-              TabTwoScreen: 'two',
+              StoreScreen: 'store',
             },
           },
           TabThree: {
@@ -46,6 +46,7 @@ const linking: LinkingOptions<RootStackParamList> = {
       KakaoLogin: 'kakaoLogin',
       Register: 'register',
       Modal: 'modal',
+      Map: 'map',
       NotFound: '*',
     },
   },

@@ -25,7 +25,16 @@ export default function KaKaoLoginScreen() {
       const tokenResponse = await axios.post(requestTokenUrl, options);
       const ACCESS_TOKEN = tokenResponse.data.access_token;
 
-      // console.log(ACCESS_TOKEN);
+      const body = {
+        ACCESS_TOKEN,
+      };
+
+      // console.log(body);
+      // const response = await axios.post(REDIRECT_URI, body);
+      // const value = response.data;
+      // // const result = await storeUser(value);
+
+      // console.log(value);
       navigation.reset({ routes: [{ name: 'Register' }] });
     } catch (e) {
       console.log(e);

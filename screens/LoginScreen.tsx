@@ -30,15 +30,14 @@ const styles = StyleSheet.create({
     paddingTop: 170,
   },
   avatar: {
-    width: 300,
-    height: 225,
-    // borderRadius: 200,
-    marginBottom: 44,
+    height: 320,
+    resizeMode: 'contain',
+    marginBottom: 24,
   },
   title: {
     fontSize: 20,
-    fontWeight: '500',
-    lineHeight: 28,
+    fontWeight: '700',
+    lineHeight: 30,
   },
   button: {
     position: 'absolute',

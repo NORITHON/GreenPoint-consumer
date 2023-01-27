@@ -14,7 +14,7 @@ const tintColorDark = '#55DB82';
 export default {
   light: {
     text: '#333',
-    textSecondary: '#B0B8C1',
+    textSecondary: '#6D7582',
     background: '#FAFAFA',
     paper: '#fff',
     tint: tintColorLight,
