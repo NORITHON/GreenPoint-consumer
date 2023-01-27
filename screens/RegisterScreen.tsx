@@ -1,7 +1,7 @@
 import Postcode from '@actbase/react-daum-postcode';
 import { REST_API_KEY } from '@env';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
@@ -16,18 +16,18 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { useSetRecoilState } from 'recoil';
+import { getUser, register } from '../apis/auth';
 import { Text, View } from '../components/Themed';
 import Colors, { theme } from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { userState } from '../store/recoil';
 
-interface IFormData {
+export interface IRegisterData {
   nickname: string;
   latitude: number;
   longitude: number;
   contact: string;
-  kakaoToken: string;
-  location: string;
+  id: number;
 }
 
 interface IBackBtn {
@@ -45,10 +45,15 @@ const BackBtn = ({ decreaseStep }: IBackBtn) => {
 };
 
 export default function RegisterScreen() {
+  const { params } = useRoute();
+  const { nickname, kakaoId } = params as { nickname: string; kakaoId: number };
   const setUser = useSetRecoilState(userState);
   const navigation = useNavigation();
   const [step, setStep] = useState(0);
-  const { watch, control, handleSubmit, setValue } = useForm<IFormData>();
+  const [location, setLocation] = useState<string>();
+  const { watch, control, handleSubmit, setValue } = useForm<IRegisterData>({
+    defaultValues: { nickname, id: kakaoId },
+  });
   const increaseStep = () => {
     Keyboard.dismiss();
     setStep((old) => {
@@ -57,21 +62,12 @@ export default function RegisterScreen() {
     });
   };
   const decreaseStep = () => setStep((old) => old - 1);
-  const onSubmit = (data: IFormData) => {
-    setUser({
-      id: 1,
-      kakaoToken: '123',
-      name: '정석민',
-      level: { id: 1, name: '123', img: '123' },
-      contact: data.contact,
-      image: '123',
-      nickname: data.nickname,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      point: 100,
-      totalPoint: 100,
-    });
-    // TODO: 회원가입 API 호출
+  const onSubmit = async (data: IRegisterData) => {
+    const responseData = await register(data);
+    if (!responseData) alert('오류발생');
+    const userData = await getUser(data.id);
+    if (!userData) alert('오류발생');
+    setUser(userData);
     increaseStep();
   };
   const getAddressData = (data: any) => {
@@ -83,7 +79,7 @@ export default function RegisterScreen() {
         if (result.data.documents[0].x && result.data.documents[0].y) {
           setValue('latitude', result.data.documents[0].y);
           setValue('longitude', result.data.documents[0].x);
-          setValue('location', defaultAddress);
+          setLocation(defaultAddress);
         }
       }
     });
@@ -138,9 +134,9 @@ export default function RegisterScreen() {
           <BackBtn decreaseStep={decreaseStep} />
           <Text style={styles.title}>
             {watch('nickname')}님의 현재 위치를{'\n'}입력해주세요{'\n'}
-            {watch('location') && (
+            {location && (
               <Text lightColor={theme.primary.main} darkColor={theme.primary.main}>
-                {watch('location') && `${watch('location')} 선택됨`}
+                {location && `${location} 선택됨`}
               </Text>
             )}
           </Text>

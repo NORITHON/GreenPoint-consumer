@@ -1,17 +1,38 @@
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useRecoilState } from 'recoil';
+import { deleteUser, logout } from '../apis/auth';
 import { View } from '../components/Themed';
 import { theme } from '../constants/Colors';
+import { userState } from '../store/recoil';
 
 export default function ModalScreen() {
+  const [user, setUser] = useRecoilState(userState);
   const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <FlatList
         data={[
-          { key: '로그아웃', onPress: () => navigation.reset({ routes: [{ name: 'Login' }] }) },
-          { key: '회원탈퇴', onPress: () => navigation.reset({ routes: [{ name: 'Login' }] }) },
+          {
+            key: '로그아웃',
+            onPress: async () => {
+              await logout();
+              setUser(null);
+              navigation.reset({ routes: [{ name: 'Login' }] });
+            },
+          },
+          {
+            key: '회원탈퇴',
+            onPress: async () => {
+              if (!user?.kakaoId) return;
+              await deleteUser(user.kakaoId);
+              await logout();
+              setUser(null);
+              navigation.reset({ routes: [{ name: 'Login' }] });
+            },
+          },
         ]}
         renderItem={({ item }) => (
           <TouchableOpacity activeOpacity={0.5} onPress={item.onPress}>

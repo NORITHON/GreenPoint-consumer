@@ -6,8 +6,7 @@ interface ILevel {
 
 export interface IUser {
   id: number;
-  kakaoToken: string;
-  name: string;
+  kakaoId: number;
   level: ILevel;
   contact: string;
   image: string;
@@ -18,9 +17,22 @@ export interface IUser {
   totalPoint: number;
 }
 
-export interface IStore {
+interface IStoreLevel {
+  grade: number;
   id: number;
+  image: string;
   name: string;
-  point: number;
-  img: string;
+}
+
+export interface IStore {
+  category: string;
+  id: number;
+  image: string;
+  latitude: number;
+  loginID: string;
+  longitude: number;
+  name: string;
+  password: string;
+  storeLevel: IStoreLevel;
+  totalPoint: number;
 }

@@ -7,16 +7,12 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import TabThreeScreen from '../screens/TabThreeScreen';
-import TabFourScreen from '../screens/TabFourScreen';
-import TabFiveScreen from '../screens/TabFiveScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import LoginScreen from '../screens/LoginScreen';
@@ -25,6 +21,13 @@ import KaKaoLoginScreen from '../screens/KaKaoLoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import StoreScreen from '../screens/StoreScreen';
 import MapScreen from '../screens/MapScreen';
+import { useRecoilState } from 'recoil';
+import { userState } from '../store/recoil';
+import MyScreen from '../screens/MyScreen';
+import PointScreen from '../screens/PointScreen';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { login } from '../apis/auth';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -44,9 +47,22 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const [user, setUser] = useRecoilState(userState);
+  useEffect(() => {
+    async function init() {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const reponseData = await login(token);
+        if (reponseData.registered) {
+          setUser(reponseData);
+        }
+      }
+    }
+    init();
+  }, []);
+
   return (
-    // <Stack.Navigator initialRouteName="Login">
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName={user ? 'Root' : 'Login'}>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen
@@ -107,18 +123,8 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="TabThree"
-        component={TabThreeScreen}
-        options={{
-          headerTransparent: true,
-          title: '지도',
-          headerTitle: '',
-          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
-        }}
-      />
-      <BottomTab.Screen
-        name="TabFour"
-        component={TabFourScreen}
+        name="Point"
+        component={PointScreen}
         options={{
           headerTransparent: true,
           title: '포인트',
@@ -127,9 +133,9 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="TabFive"
-        component={TabFiveScreen}
-        options={({ navigation }: RootTabScreenProps<'TabFive'>) => ({
+        name="My"
+        component={MyScreen}
+        options={({ navigation }: RootTabScreenProps<'My'>) => ({
           headerTransparent: true,
           title: '마이',
           headerTitle: '',

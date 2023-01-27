@@ -4,12 +4,16 @@ import axios from 'axios';
 import QueryString from 'qs';
 import { StyleSheet } from 'react-native';
 import WebView from 'react-native-webview';
+import { useSetRecoilState } from 'recoil';
+import { getUser, login } from '../apis/auth';
 import { View } from '../components/Themed';
+import { userState } from '../store/recoil';
 
 const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage('message from webView')`;
 
 export default function KaKaoLoginScreen() {
   const navigation = useNavigation();
+  const setUser = useSetRecoilState(userState);
 
   const requestToken = async (code: string) => {
     const requestTokenUrl = 'https://kauth.kakao.com/oauth/token';
@@ -23,19 +27,15 @@ export default function KaKaoLoginScreen() {
 
     try {
       const tokenResponse = await axios.post(requestTokenUrl, options);
-      const ACCESS_TOKEN = tokenResponse.data.access_token;
-
-      const body = {
-        ACCESS_TOKEN,
-      };
-
-      // console.log(body);
-      // const response = await axios.post(REDIRECT_URI, body);
-      // const value = response.data;
-      // // const result = await storeUser(value);
-
-      // console.log(value);
-      navigation.reset({ routes: [{ name: 'Register' }] });
+      const reponseData = await login(tokenResponse.data.access_token);
+      if (reponseData.registered) {
+        const userData = await getUser(reponseData.kakaoId);
+        if (!userData) alert('오류발생');
+        setUser(userData);
+        navigation.reset({ routes: [{ name: 'Root' }] });
+      } else {
+        navigation.reset({ routes: [{ name: 'Register', params: reponseData }] });
+      }
     } catch (e) {
       console.log(e);
     }

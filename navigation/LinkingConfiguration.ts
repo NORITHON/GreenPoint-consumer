@@ -25,19 +25,14 @@ const linking: LinkingOptions<RootStackParamList> = {
               StoreScreen: 'store',
             },
           },
-          TabThree: {
+          Point: {
             screens: {
-              TabThreeScreen: 'three',
+              PointScreen: 'point',
             },
           },
-          TabFour: {
+          My: {
             screens: {
-              TabFourScreen: 'four',
-            },
-          },
-          TabFive: {
-            screens: {
-              TabFiveScreen: 'five',
+              MyScreen: 'my',
             },
           },
         },

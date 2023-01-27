@@ -9,15 +9,15 @@ import { IStore } from '../store/types';
 
 export default function MapScreen() {
   const route = useRoute();
-  const { name } = route.params as IStore;
+  const { name, latitude, longitude } = route.params as IStore;
   const user = useRecoilValue(userState);
   return (
     <View style={styles.container}>
       <MapView
         style={{ flex: 1 }}
         initialRegion={{
-          latitude: user?.latitude ?? 36.103116,
-          longitude: user?.longitude ?? 129.388368,
+          latitude: latitude,
+          longitude: longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
@@ -31,8 +31,8 @@ export default function MapScreen() {
         />
         <Marker
           coordinate={{
-            latitude: user?.latitude ?? 36.113116,
-            longitude: user?.longitude ?? 129.388368,
+            latitude: latitude,
+            longitude: longitude,
           }}
           title={name}
         />

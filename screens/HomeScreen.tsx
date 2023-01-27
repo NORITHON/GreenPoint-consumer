@@ -1,6 +1,8 @@
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet } from 'react-native';
 import { useRecoilValue } from 'recoil';
+import { getRecentStores } from '../apis/store';
 import { GreenCalendar } from '../components/Heatmap';
 import { Text, View } from '../components/Themed';
 import Colors, { theme } from '../constants/Colors';
@@ -29,9 +31,27 @@ const recentList = [
   },
 ] as { id: number; name: string; point: number; img: string }[];
 
+interface IRecentStore {
+  currentPoint: number;
+  savedPoint: number;
+  storeName: string;
+  usedPoint: number;
+  image: string;
+}
+
 export default function HomeScreen({ navigation }: RootTabScreenProps<'Home'>) {
   const user = useRecoilValue(userState);
   const theme = useColorScheme();
+  const [recentStores, setRecentStores] = useState<IRecentStore[]>([]);
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user) return;
+      const data = await getRecentStores(user.id);
+      setRecentStores(data);
+    };
+    loadData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -62,12 +82,12 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'Home'>) {
                 marginVertical: 30,
               }}
             >
-              {recentList.map((item) => (
-                <View key={item.id} style={{ backgroundColor: 'inherit', alignItems: 'center' }}>
+              {recentStores.map((item, index) => (
+                <View key={index} style={{ backgroundColor: 'inherit', alignItems: 'center' }}>
                   <Image
                     style={styles.storeLogo}
                     source={{
-                      uri: item.img,
+                      uri: item.image,
                     }}
                   />
                   <Text
@@ -77,10 +97,10 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'Home'>) {
                       marginBottom: 4,
                     }}
                   >
-                    {item.name}
+                    {item.storeName}
                   </Text>
                   <Text style={{ fontWeight: '500' }}>
-                    <FontAwesome5 name="bitcoin" size={16} /> {item.point}
+                    <FontAwesome5 name="bitcoin" size={16} /> {item.savedPoint}
                   </Text>
                 </View>
               ))}
