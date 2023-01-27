@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    bottom: 48,
+    bottom: 40,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,

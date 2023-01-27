@@ -1,16 +1,24 @@
+import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet } from 'react-native';
-
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import { FlatList, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View } from '../components/Themed';
+import { theme } from '../constants/Colors';
 
 export default function ModalScreen() {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/ModalScreen.tsx" />
-
+      <FlatList
+        data={[
+          { key: '로그아웃', onPress: () => navigation.reset({ routes: [{ name: 'Login' }] }) },
+          { key: '회원탈퇴', onPress: () => navigation.reset({ routes: [{ name: 'Login' }] }) },
+        ]}
+        renderItem={({ item }) => (
+          <TouchableOpacity activeOpacity={0.5} onPress={item.onPress}>
+            <Text style={styles.item}>{item.key}</Text>
+          </TouchableOpacity>
+        )}
+      />
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </View>
@@ -20,16 +28,13 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 20,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  item: {
+    padding: 12,
+    paddingHorizontal: 24,
+    fontSize: 18,
+    height: 48,
+    color: theme.secondary.main,
   },
 });
