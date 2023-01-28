@@ -35,4 +35,5 @@ export interface IStore {
   password: string;
   storeLevel: IStoreLevel;
   totalPoint: number;
+  maximumPoint: number;
 }

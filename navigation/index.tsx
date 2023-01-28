@@ -27,7 +27,7 @@ import MyScreen from '../screens/MyScreen';
 import PointScreen from '../screens/PointScreen';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { login } from '../apis/auth';
+import { getUser, login } from '../apis/auth';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -94,6 +94,13 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const [user, setUser] = useRecoilState(userState);
+
+  const refresh = async () => {
+    if (!user) return;
+    const userData = await getUser(user.kakaoId);
+    setUser(userData);
+  };
 
   return (
     <BottomTab.Navigator
@@ -110,6 +117,21 @@ function BottomTabNavigator() {
           title: '홈',
           headerTitle: '',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerRight: () => (
+            <Pressable
+              onPress={refresh}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <FontAwesome5
+                name="sync-alt"
+                size={24}
+                color={Colors[colorScheme].tabIconDefault}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
         })}
       />
       <BottomTab.Screen

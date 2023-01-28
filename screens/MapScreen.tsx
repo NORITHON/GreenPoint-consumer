@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useRecoilValue } from 'recoil';

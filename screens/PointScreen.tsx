@@ -14,7 +14,10 @@ interface IHistory {
   usedPoint: number;
   currentPoint: number;
   image: string;
+  created_at: Date;
 }
+
+const giveZeroPadding = (num: number) => (num < 10 && num >= 0 ? '0' + num : num);
 
 export default function PointScreen() {
   const themeMode = useColorScheme();
@@ -62,7 +65,9 @@ export default function PointScreen() {
             <View style={{ marginLeft: 12, backgroundColor: 'inherit' }}>
               <Text style={{ marginBottom: 6, fontWeight: '600' }}>{item.storeName}</Text>
               <Text style={{ color: Colors[themeMode].textSecondary, fontWeight: '600' }}>
-                {item.currentPoint}원
+                {item.created_at.getMonth() + 1}월 {item.created_at.getDate()}일{' - '}
+                {giveZeroPadding(item.created_at.getHours())}:
+                {giveZeroPadding(item.created_at.getMinutes())}
               </Text>
             </View>
             <View style={{ flex: 1 }} />
