@@ -30,7 +30,7 @@ export default function PointScreen() {
       setHistories(data);
     };
     loadData();
-  }, []);
+  }, [user]);
 
   return (
     <View style={styles.container}>

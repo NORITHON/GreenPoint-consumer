@@ -32,7 +32,7 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'Home'>) {
       setDailyPoint(dailyPoint);
     };
     loadData();
-  }, []);
+  }, [user]);
 
   return (
     <View style={styles.container}>
